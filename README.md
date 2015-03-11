@@ -20,6 +20,7 @@ $ npm install --save grunt-local-googlefont
       ],
       "cssDestination": "site/styles",
       "fontDestination": "public/fonts"
+      "saveCSS": false
     }
   }
 }

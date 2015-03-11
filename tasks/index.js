@@ -17,25 +17,31 @@ module.exports = function (grunt) {
       }
     }, function (error, response, body) {
 
+      if (!options.saveCSS) grunt.log.debug('Not writing CSS file!');
+
       var json = parseCSS(body);
       var rules = json.rulelist.slice();
 
       function next () {
-
         if (!rules.length) {
-          return writeStylesheet(options, key, body, json.rulelist, done);
+          if (options.saveCSS) {
+            return writeStylesheet(options, key, body, json.rulelist, done);
+          } else {
+            done();
+          }
         }
 
         var rule = rules.shift();
-        if (rule.type === 'fontface') {
-          var url = getDownloadUrl(rule.declarations.src);
-          var filename = options.fontDestination + '/' + getFilename(rule, key, url);
+        if (rule !== undefined) {
+          if (rule.type === 'fontface') {
+            var url = getDownloadUrl(rule.declarations.src);
+            var filename = options.fontDestination + '/' + getFilename(rule, key, url);
 
-          body = formatBody(options, body, url, filename);
-          downloadFont(url, filename, next);
+            body = formatBody(options, body, url, filename);
+            downloadFont(url, filename, next);
+          }
         }
       }
-
       next();
     });
   }
